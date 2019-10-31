@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiveFootballBot", "LiveFootballBot\LiveFootballBot.csproj", "{A600A4B4-F932-435A-BF1D-C3082DC6D664}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A600A4B4-F932-435A-BF1D-C3082DC6D664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A600A4B4-F932-435A-BF1D-C3082DC6D664}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A600A4B4-F932-435A-BF1D-C3082DC6D664}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A600A4B4-F932-435A-BF1D-C3082DC6D664}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7B27635E-E63D-4EA1-B145-8482CD32D455}
+	EndGlobalSection
+EndGlobal
