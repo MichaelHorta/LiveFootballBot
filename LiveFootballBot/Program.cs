@@ -1,19 +1,10 @@
-﻿using LiveFootballBot.Models.Events;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
 using System.Threading;
-using System.Threading.Tasks;
-using Telegram.Bot;
-using Telegram.Bot.Args;
-using Telegram.Bot.Types.ReplyMarkups;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using LiveFootballBot.Commands;
 
 namespace LiveFootballBot
 {
@@ -58,6 +49,8 @@ namespace LiveFootballBot
 
             // add services
             serviceCollection.AddSingleton<ITelegramBotService, TelegramBotService>();
+            serviceCollection.AddSingleton<ICommandManager, CommandManager>();
+            serviceCollection.AddSingleton<IBoard, Board>();
 
             // add app
             serviceCollection.AddTransient<App>();
