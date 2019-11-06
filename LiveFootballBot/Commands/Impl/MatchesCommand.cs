@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LiveFootballBot.Commands
 {
-    public class MatchesCommand:ICommand
+    public class MatchesCommand : ICommand
     {
         private readonly static int MAX_COUNT_PARAMETERS = 1;
         private readonly IBoard _board;
@@ -14,13 +14,15 @@ namespace LiveFootballBot.Commands
             _board = board;
         }
 
-        public string Execute(CommandParameters parameters)
+        public string Execute(CommandParameters parameters, long chatId)
         {
             var eventsData = _board.SearchEventsData(parameters.Options[CommandParameters.KEY_DATE]);
 
             var response = "";
             foreach (var ev in eventsData)
             {
+                if (null == ev.SportEvent)
+                    continue;
                 response += $"<b>{ev.SportEvent.Competitors.HomeTeam.AbbName}  {ev.Score.HomeTeam.TotalScore} - {ev.Score.AwayTeam.TotalScore} {ev.SportEvent.Competitors.AwayTeam.AbbName}</b> ({ev.Tournament.Name})\n";
             }
             return response;
