@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace LiveFootballBot.Models.Events
+namespace LiveFootballBot.Models
 {
     public class RootEvents
     {
@@ -44,10 +43,8 @@ namespace LiveFootballBot.Models.Events
         public ScoreDetail AwayTeam { get; set; }
         public ScoreDetail HomeTeam { get; set; }
 
-        [JsonIgnore]
         public Period Period { get; set; }
 
-        [JsonIgnore]
         public Winner Winner { get; set; }
     }
 
@@ -91,7 +88,6 @@ namespace LiveFootballBot.Models.Events
         [JsonIgnore]
         public IDictionary<string, string> AlternateNames { get; set; }
 
-        [JsonIgnore]
         public string Name { get; set; }
 
         [JsonIgnore]
@@ -181,7 +177,7 @@ namespace LiveFootballBot.Models.Events
     {
         public string Site { get; set; }
         public string Url { get; set; }
-        public IEnumerable<OtherUrl> OtherUrls { get; set; }
+        public List<OtherUrl> OtherUrls { get; set; }
     }
 
     public class Tv
