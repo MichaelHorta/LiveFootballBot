@@ -6,7 +6,7 @@ namespace LiveFootballBot.Commands
 {
     public interface ICommand
     {
-        string Execute(CommandParameters parameters);
+        string Execute(CommandParameters parameters, long chatId);
 
         bool Validate(CommandParameters parameters);
 
