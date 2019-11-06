@@ -24,14 +24,16 @@ namespace LiveFootballBot.Commands
         public void InitializeCommands()
         {
             var matchesCommand = new MatchesCommand(_board);
+            var followMatchCommand = new FollowMatchCommand(_board);
             Commands = new Dictionary<string, ICommand>
             {
                 { new StartCommand().GetName(), new StartCommand() },
-                { matchesCommand.GetName(), matchesCommand }
+                { matchesCommand.GetName(), matchesCommand },
+                { followMatchCommand.GetName(), followMatchCommand }
             };
         }
 
-        public string ExceuteCommand(string input)
+        public string ExceuteCommand(string input, long chatId)
         {
             var command = GetCommand(input);
 
@@ -49,7 +51,7 @@ namespace LiveFootballBot.Commands
                 //parametrosComando.adicionarParametro(ParametrosComando.KEY_AYUDA_PERSONALIZADA, msg);
             }
 
-            return command.Execute(commandParameters);
+            return command.Execute(commandParameters, chatId);
         }
 
         public ICommand GetCommand(string input)
@@ -75,8 +77,7 @@ namespace LiveFootballBot.Commands
                 }
                 else if (c.HasValue)
                 {
-                    string start = null;
-                    commandParameters.Options.TryGetValue(c.Value, out start);
+                    commandParameters.Options.TryGetValue(c.Value, out string start);
                     if (start == null)
                     {
                         start = "";

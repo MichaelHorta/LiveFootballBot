@@ -8,7 +8,7 @@ namespace LiveFootballBot.Commands
     {
         void InitializeCommands();
 
-        string ExceuteCommand(string input);
+        string ExceuteCommand(string input, long chatId);
 
         ICommand GetCommand(string input);
     }
