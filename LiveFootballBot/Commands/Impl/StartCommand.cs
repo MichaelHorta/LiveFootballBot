@@ -6,7 +6,7 @@ namespace LiveFootballBot.Commands
 {
     public class StartCommand : ICommand
     {
-        public string Execute(CommandParameters parameters)
+        public string Execute(CommandParameters parameters, long chatId)
         {
             return "Hello Start";
         }
