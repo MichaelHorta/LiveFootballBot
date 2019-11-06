@@ -6,11 +6,12 @@ namespace LiveFootballBot
 {
     public class AppSettings
     {
-        public Unidadeditorial Unidadeditorial { get; set; }
+        public UnidadeditorialAPI UnidadeditorialAPI { get; set; }
     }
 
-    public class Unidadeditorial
+    public class UnidadeditorialAPI
     {
-        public string Api { get; set; }
+        public string Events { get; set; }
+        public string Event { get; set; }
     }
 }
