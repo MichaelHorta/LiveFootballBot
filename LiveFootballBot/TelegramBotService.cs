@@ -3,6 +3,8 @@ using Microsoft.Extensions.Options;
 using System;
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Types;
+using System.Collections.Generic;
 
 namespace LiveFootballBot
 {
@@ -10,9 +12,9 @@ namespace LiveFootballBot
     {
         private readonly BotSettings _botSettings;
         private ITelegramBotClient botClient;
-        private readonly ICommandManager _commandManager;
+        public event EventHandler<Message> MessageReceived;
 
-        public TelegramBotService(IOptions<BotSettings> config, ICommandManager commandManager)
+        public TelegramBotService(IOptions<BotSettings> config)
         {
             _botSettings = config.Value;
 
@@ -22,8 +24,6 @@ namespace LiveFootballBot
             Console.WriteLine(
               $"Hello, World! I am user {me.Id} and my name is {me.FirstName}."
             );
-
-           _commandManager = commandManager;
         }
 
         public void StartReceiving()
@@ -32,18 +32,55 @@ namespace LiveFootballBot
             botClient.StartReceiving();
         }
 
-        private async void Bot_OnMessage(object sender, MessageEventArgs e)
+        private void OnMessageReceived(Message message)
+        {
+            MessageReceived?.Invoke(this, message);
+        }
+
+        private void Bot_OnMessage(object sender, MessageEventArgs e)
         {
             if (e.Message.Text != null)
             {
-                var response = _commandManager.ExceuteCommand(e.Message.Text);
-                Console.WriteLine($"Received a text message in chat {e.Message.Chat.Id}. Response: {response}");
+                OnMessageReceived(e.Message);
+            }
+        }
 
-                await botClient.SendTextMessageAsync(
-                  chatId: e.Message.Chat,
-                  text: $"{response}",
-                  parseMode: Telegram.Bot.Types.Enums.ParseMode.Html 
+        public void SendTextMessage(long chatId, string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return;
+
+            try
+            {
+                botClient.SendTextMessageAsync(
+                  chatId: chatId,
+                  text: $"{text}",
+                  parseMode: Telegram.Bot.Types.Enums.ParseMode.Html
+                ).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public void SendTextMessageAsync(long chatId, string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return;
+
+            botClient.SendTextMessageAsync(
+                  chatId: chatId,
+                  text: $"{text}",
+                  parseMode: Telegram.Bot.Types.Enums.ParseMode.Html
                 );
+        }
+
+        public void SendTextMessages(long chatId, List<string> texts)
+        {
+            foreach(var text in texts)
+            {
+                SendTextMessage(chatId, text);
             }
         }
     }
