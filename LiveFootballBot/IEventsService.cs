@@ -1,13 +1,13 @@
-﻿using LiveFootballBot.Models.Events;
-using System;
+﻿using LiveFootballBot.Models;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LiveFootballBot
 {
     public interface IEventsService
     {
-        Task<List<EventData>> GetEvents(string path, string type = null);
+        Task<List<EventData>> GetEvents(string apiUrl, string type = null);
+
+        Task<EventInfo> GetEventInfo(string apiUrl);
     }
 }

@@ -1,4 +1,4 @@
-﻿using LiveFootballBot.Models.Events;
+﻿using LiveFootballBot.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,10 +18,10 @@ namespace LiveFootballBot
             _httpClient = new HttpClient();
         }
 
-        public async Task<List<EventData>> GetEvents(string path, string type = null)
+        public async Task<List<EventData>> GetEvents(string apiUrl, string type = null)
         {
             RootEvents rootEvents = null;
-            HttpResponseMessage response = await _httpClient.GetAsync(path);
+            HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -35,6 +35,19 @@ namespace LiveFootballBot
             }
             
             return rootEvents.Data;
+        }
+
+        public async Task<EventInfo> GetEventInfo(string apiUrl)
+        {
+            RootEvent rootEvent = null;
+            HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                rootEvent = JsonConvert.DeserializeObject<RootEvent>(content);
+            }
+
+            return rootEvent.Data;
         }
     }
 }
