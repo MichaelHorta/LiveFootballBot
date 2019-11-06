@@ -7,6 +7,7 @@ namespace LiveFootballBot.Commands
     public class CommandParameters
     {
         public static char KEY_DATE = 'd';
+        public static char KEY_MATCH = 'm';
         public string Key { get; set; }
         public IDictionary<char, string> Options { get; set; }
 
