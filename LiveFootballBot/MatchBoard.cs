@@ -12,7 +12,7 @@ namespace LiveFootballBot
         private readonly AppSettings _appSettings;
         private readonly IEventsService _eventsService;
         private readonly ITelegramBotService _telegramBotService;
-        private readonly List<MatchLiveItem> _liveItems;
+        //private readonly List<MatchLiveItem> _liveItems;
 
         List<Regex> blackListRegex = new List<Regex>
         {
@@ -38,7 +38,7 @@ namespace LiveFootballBot
 
         private bool ended;
 
-        public event Action xxOnTimeTriggered;
+        private event Action onTimeTriggered;
 
         public MatchBoard(AppSettings appSettings, ITelegramBotService telegramBotService, IEventsService eventsService, string eventId, List<ChatSubscribed> chatsSubscribed, EditorialInfo editorialInfo, Competitors competitors)
         {
@@ -50,36 +50,15 @@ namespace LiveFootballBot
             _editorialInfo = editorialInfo;
             _competitors = competitors;
 
-            _liveItems = new List<MatchLiveItem>();
+            //_liveItems = new List<MatchLiveItem>();
 
             ended = false;
 
-            xxOnTimeTriggered += MatchBoard_xxOnTimeTriggered;
+            onTimeTriggered += MatchBoard_OnTimeTriggered;
             InitiateAsync(new TimeSpan(0, 0, 10));
-
-            //var trigger = new TimerTrigger(new TimeSpan(0, 0, 30));
-            //trigger.OnTimeTriggered += () =>
-            //{
-            //    if (ChatsSubscribed.Count == 0)
-            //        return;
-
-            //    var eventInfo = GetEventInfo();
-
-            //    lastComment = eventInfo.Narration.Commentaries.Count;
-
-            //    var commentaries = eventInfo.Narration.Commentaries;
-            //    commentaries = Clean(commentaries);
-
-            //    foreach (var chatSubscribed in ChatsSubscribed)
-            //    {
-            //        Task.Run(() => SendCommentariesToChatSuscribed(eventInfo, chatSubscribed, commentaries));
-            //    }
-
-            //    ended = eventInfo.Event.Score.Period.AlternateNames.ContainsKey("enEN") ? eventInfo.Event.Score.Period.AlternateNames["enEN"].Equals("Ended") : false;
-            //};
         }
 
-        private void MatchBoard_xxOnTimeTriggered()
+        private void MatchBoard_OnTimeTriggered()
         {
             if (ChatsSubscribed.Count == 0)
                 return;
@@ -103,7 +82,7 @@ namespace LiveFootballBot
         {
             while (!ended)
             {
-                xxOnTimeTriggered?.Invoke();
+                onTimeTriggered?.Invoke();
                 await Task.Delay(timeSpan);
             }
         }
@@ -160,27 +139,5 @@ namespace LiveFootballBot
     {
         public int LastComment { get; set; }
         public long ChatId { get; set; }
-    }
-
-    public class TimerTrigger
-    {
-        readonly TimeSpan _timeSpan;
-
-        public TimerTrigger(TimeSpan timeSpan)
-        {
-            _timeSpan = timeSpan;
-            InitiateAsync();
-        }
-
-        async void InitiateAsync()
-        {
-            while (true)
-            {
-                OnTimeTriggered?.Invoke();
-                await Task.Delay(_timeSpan);
-            }
-        }
-
-        public event Action OnTimeTriggered;
     }
 }
