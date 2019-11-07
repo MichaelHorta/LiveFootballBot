@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LiveFootballBot
+namespace LiveFootballBot.Core
 {
     public class BotSettings
     {

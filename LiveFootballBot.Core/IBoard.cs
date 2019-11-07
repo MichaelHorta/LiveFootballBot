@@ -1,7 +1,7 @@
 ﻿using LiveFootballBot.Models;
 using System.Collections.Generic;
 
-namespace LiveFootballBot
+namespace LiveFootballBot.Core
 {
     public interface IBoard
     {

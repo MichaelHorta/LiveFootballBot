@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Telegram.Bot.Types;
 
-namespace LiveFootballBot
+namespace LiveFootballBot.Core
 {
     public interface ITelegramBotService
     {

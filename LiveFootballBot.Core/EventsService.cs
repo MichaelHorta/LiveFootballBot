@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LiveFootballBot
+namespace LiveFootballBot.Core
 {
     public class EventsService: IEventsService
     {

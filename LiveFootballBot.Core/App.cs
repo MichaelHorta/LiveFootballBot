@@ -1,9 +1,9 @@
-﻿using LiveFootballBot.Commands;
+﻿using LiveFootballBot.Core.Commands;
 using Microsoft.Extensions.Logging;
 using System;
 using Telegram.Bot.Types;
 
-namespace LiveFootballBot
+namespace LiveFootballBot.Core
 {
     public class App
     {

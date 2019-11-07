@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace LiveFootballBot
+namespace LiveFootballBot.Core
 {
     public interface IEventsService
     {

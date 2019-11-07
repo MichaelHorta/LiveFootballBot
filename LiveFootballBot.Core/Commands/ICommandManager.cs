@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LiveFootballBot.Commands
+namespace LiveFootballBot.Core.Commands
 {
     public interface ICommandManager
     {

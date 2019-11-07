@@ -6,13 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Cache\CacheManager.cs" />
-    <Compile Remove="Cache\ICacheProvider.cs" />
-    <Compile Remove="Cache\MemoryCacheProvider.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="IronPython" Version="2.7.9" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.1.0" />
@@ -26,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Cache\" />
+    <ProjectReference Include="..\LiveFootballBot.Core\LiveFootballBot.Core.csproj" />
   </ItemGroup>
 
 </Project>

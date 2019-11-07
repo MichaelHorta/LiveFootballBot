@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace LiveFootballBot.Commands
+namespace LiveFootballBot.Core.Commands
 {
     public class MatchesCommand : ICommand
     {

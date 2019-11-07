@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace LiveFootballBot.Commands
+namespace LiveFootballBot.Core.Commands
 {
     public class CommandManager : ICommandManager
     {

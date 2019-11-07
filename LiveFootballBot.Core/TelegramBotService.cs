@@ -1,12 +1,11 @@
-﻿using LiveFootballBot.Commands;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using System;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using System.Collections.Generic;
 
-namespace LiveFootballBot
+namespace LiveFootballBot.Core
 {
     public class TelegramBotService : ITelegramBotService
     {

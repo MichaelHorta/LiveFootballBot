@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using LiveFootballBot.Commands;
+using LiveFootballBot.Core;
 
 namespace LiveFootballBot
 {
@@ -49,7 +48,7 @@ namespace LiveFootballBot
 
             // add services
             serviceCollection.AddSingleton<ITelegramBotService, TelegramBotService>();
-            serviceCollection.AddSingleton<ICommandManager, CommandManager>();
+            serviceCollection.AddSingleton<Core.Commands.ICommandManager, Core.Commands.CommandManager>();
             serviceCollection.AddSingleton<IBoard, Board>();
 
             // add app

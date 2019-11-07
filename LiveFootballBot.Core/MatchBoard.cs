@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace LiveFootballBot
+namespace LiveFootballBot.Core
 {
     public class MatchBoard
     {

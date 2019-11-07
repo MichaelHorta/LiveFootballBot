@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace LiveFootballBot.Commands
+namespace LiveFootballBot.Core.Commands
 {
     public class FollowMatchCommand : ICommand
     {

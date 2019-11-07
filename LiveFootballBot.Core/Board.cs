@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 
-namespace LiveFootballBot
+namespace LiveFootballBot.Core
 {
     public class Board : IBoard
     {
