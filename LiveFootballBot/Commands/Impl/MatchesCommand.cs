@@ -23,7 +23,12 @@ namespace LiveFootballBot.Commands
             {
                 if (null == ev.SportEvent)
                     continue;
-                response += $"<b>{ev.SportEvent.Competitors.HomeTeam.AbbName}  {ev.Score.HomeTeam.TotalScore} - {ev.Score.AwayTeam.TotalScore} {ev.SportEvent.Competitors.AwayTeam.AbbName}</b> ({ev.Tournament.Name})\n";
+
+                var cometitors = ev.SportEvent.Competitors;
+                var homeTeamName = !string.IsNullOrEmpty(cometitors.HomeTeam.AbbName) ? cometitors.HomeTeam.AbbName : cometitors.HomeTeam.FullName;
+                var awayTeamName = !string.IsNullOrEmpty(cometitors.AwayTeam.AbbName) ? cometitors.AwayTeam.AbbName : cometitors.AwayTeam.FullName;
+
+                response += $"<b>{homeTeamName} {ev.Score.HomeTeam.TotalScore} - {ev.Score.AwayTeam.TotalScore} {awayTeamName}</b> ({ev.Tournament.Name})\n";
             }
             return response;
         }
