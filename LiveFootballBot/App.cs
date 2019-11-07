@@ -1,10 +1,7 @@
-﻿using LiveFootballBot.Models.Events;
+﻿using LiveFootballBot.Commands;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+using Telegram.Bot.Types;
 
 namespace LiveFootballBot
 {
@@ -12,16 +9,28 @@ namespace LiveFootballBot
     {
         private readonly ILogger<App> _logger;
         private readonly ITelegramBotService _telegramBotService;
+        private readonly ICommandManager _commandManager;
 
-        public App(ILogger<App> logger, ITelegramBotService telegramBotService)
+        public App(ILogger<App> logger, ITelegramBotService telegramBotService, ICommandManager commandManager)
         {
             _logger = logger;
             _telegramBotService = telegramBotService;
+            _commandManager = commandManager;
         }
 
         public void Run()
         {
+            _telegramBotService.MessageReceived += App_MessageReceived;
             _telegramBotService.StartReceiving();
+        }
+
+        public void App_MessageReceived(object sender, Message message)
+        {
+            Console.WriteLine($"Received message from {message.Chat.Id}. Message: {message.Text}");
+
+            var response = _commandManager.ExceuteCommand(message.Text, message.Chat.Id);
+
+            _telegramBotService.SendTextMessageAsync(message.Chat.Id, $"{response}");
         }
     }
 }
