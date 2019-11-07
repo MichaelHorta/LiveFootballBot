@@ -49,6 +49,7 @@ namespace LiveFootballBot.Core.Commands
                 //command = new HelpCommand();
                 //parametrosComando = new CommandParameters(command.GetName());
                 //parametrosComando.adicionarParametro(ParametrosComando.KEY_AYUDA_PERSONALIZADA, msg);
+                return "Command is not valid";
             }
 
             return command.Execute(commandParameters, chatId);
