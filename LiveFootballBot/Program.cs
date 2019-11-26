@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using LiveFootballBot.Core;
 
 namespace LiveFootballBot
 {
@@ -11,9 +12,7 @@ namespace LiveFootballBot
         static void Main(string[] args)
         {
             // create service collection
-            var serviceCollection = new ServiceCollection();
-
-            ConfigureServices(serviceCollection);
+            var serviceCollection = ConfigureServices();
 
             // create service provider
             var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -27,8 +26,10 @@ namespace LiveFootballBot
             Thread.Sleep(int.MaxValue);
         }
 
-        private static void ConfigureServices(IServiceCollection serviceCollection)
+        private static IServiceCollection ConfigureServices()
         {
+            IServiceCollection serviceCollection = new ServiceCollection();
+
             // add logging
             serviceCollection.AddSingleton(new LoggerFactory()
               .AddConsole()
@@ -39,18 +40,21 @@ namespace LiveFootballBot
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", false)
+                .AddJsonFile("botsettings.json", false)
                 .Build();
             serviceCollection.AddOptions();
             serviceCollection.Configure<AppSettings>(configuration.GetSection("Configuration"));
-
-            // add memory cache
-            serviceCollection.AddMemoryCache();
+            serviceCollection.Configure<BotSettings>(configuration.GetSection("Configuration"));
 
             // add services
-            //serviceCollection.AddTransient<ITestService, TestService>();
+            serviceCollection.AddSingleton<ITelegramBotService, TelegramBotService>();
+            serviceCollection.AddSingleton<Core.Commands.ICommandManager, Core.Commands.CommandManager>();
+            serviceCollection.AddSingleton<IBoard, Board>();
 
             // add app
             serviceCollection.AddTransient<App>();
+
+            return serviceCollection;
         }
     }
 }
