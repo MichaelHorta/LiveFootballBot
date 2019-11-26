@@ -26,12 +26,9 @@ namespace LiveFootballBot.Core.Commands
                 if (null == matchBoard)
                     matchBoard = _board.CreateMatchBoard(matchName, date, chatId);
                 else
-                    matchBoard.ChatsSubscribed.Add(new ChatSubscribed
-                    {
-                        ChatId = chatId
-                    });
-
-            } catch(Exception)
+                    matchBoard.SuscribeChat(chatId);
+            }
+            catch (Exception)
             {
                 return null;
             }

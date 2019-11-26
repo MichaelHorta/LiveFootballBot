@@ -23,7 +23,7 @@ namespace LiveFootballBot.Core
             new Regex(@"<\s*div[^>]*>(.*?)<\s*/\s*div>")
         };
 
-        public List<ChatSubscribed> ChatsSubscribed { get; set; }
+        private ChatSubscribedList chatsSubscribedList;
         private int lastComment;
         public readonly string _eventId;
 
@@ -36,53 +36,66 @@ namespace LiveFootballBot.Core
         public readonly EditorialInfo _editorialInfo;
         private readonly Competitors _competitors;
 
-        private bool ended;
+        private bool matchEnded;
+        private int numberOfRequestsAfterMatchEnded = 10;
 
         private event Action onTimeTriggered;
 
-        public MatchBoard(AppSettings appSettings, ITelegramBotService telegramBotService, IEventsService eventsService, string eventId, List<ChatSubscribed> chatsSubscribed, EditorialInfo editorialInfo, Competitors competitors)
+        public MatchBoard(AppSettings appSettings, ITelegramBotService telegramBotService, IEventsService eventsService, string eventId, EditorialInfo editorialInfo, Competitors competitors)
         {
             _appSettings = appSettings;
             _eventsService = eventsService;
             _telegramBotService = telegramBotService;
             _eventId = eventId;
-            ChatsSubscribed = chatsSubscribed;
+            chatsSubscribedList = new ChatSubscribedList();
             _editorialInfo = editorialInfo;
             _competitors = competitors;
 
             //_liveItems = new List<MatchLiveItem>();
 
-            ended = false;
+            matchEnded = false;
 
             onTimeTriggered += MatchBoard_OnTimeTriggered;
             InitiateAsync(new TimeSpan(0, 0, 10));
         }
 
+        public void SuscribeChat(long chatId)
+        {
+            chatsSubscribedList.Add(new ChatSubscribed()
+            {
+                ChatId = chatId
+            }, lastComment);
+        }
+
         private void MatchBoard_OnTimeTriggered()
         {
-            if (ChatsSubscribed.Count == 0)
+            if (chatsSubscribedList.Count == 0)
                 return;
 
             var eventInfo = GetEventInfo();
+            if (null == eventInfo)
+                return;
 
             lastComment = eventInfo.Narration.Commentaries.Count;
 
             var commentaries = eventInfo.Narration.Commentaries;
             commentaries = Clean(commentaries);
 
-            foreach (var chatSubscribed in ChatsSubscribed)
+            foreach (var chatSubscribed in chatsSubscribedList)
             {
                 Task.Run(() => SendCommentariesToChatSuscribed(eventInfo, chatSubscribed, commentaries));
             }
 
-            ended = eventInfo.Event.Score.Period.AlternateNames.ContainsKey("enEN") ? eventInfo.Event.Score.Period.AlternateNames["enEN"].Equals("Ended") : false;
+            matchEnded = eventInfo.Event.Score.Period.AlternateNames.ContainsKey("enEN") ? eventInfo.Event.Score.Period.AlternateNames["enEN"].Equals("Ended") : false;
         }
 
         async void InitiateAsync(TimeSpan timeSpan)
         {
-            while (!ended)
+            while (!matchEnded || numberOfRequestsAfterMatchEnded > 0)
             {
                 onTimeTriggered?.Invoke();
+                if (matchEnded)
+                    numberOfRequestsAfterMatchEnded--;
                 await Task.Delay(timeSpan);
             }
         }
@@ -117,12 +130,17 @@ namespace LiveFootballBot.Core
         private void SendCommentariesToChatSuscribed(EventInfo eventInfo, ChatSubscribed chatSubscribed, List<Commentary> commentaries)
         {
             var messages = new List<string>();
-            if(chatSubscribed.LastComment == 0)
-                commentaries.Reverse();
+            if (chatSubscribed.LastComment == 0)
+            {
+                //commentaries.Reverse();
+                chatSubscribed.LastComment = commentaries.Count > 0 ? commentaries.Count - 1 : 0;
+            }
+                
             var lastCommentaries = commentaries.Take(commentaries.Count - chatSubscribed.LastComment).ToList();
 
             foreach (var commentary in lastCommentaries)
             {
+                //\u26BD
                 var message = $"<b>{_competitors.HomeTeam.AbbName} {eventInfo.Event.Score.HomeTeam.TotalScore}-{eventInfo.Event.Score.AwayTeam.TotalScore} {_competitors.AwayTeam.AbbName}</b>\n";
                 if (!string.IsNullOrEmpty(commentary.MomentAction))
                     message += $"<b>{commentary.MomentAction}</b>\n";
@@ -132,6 +150,15 @@ namespace LiveFootballBot.Core
 
             chatSubscribed.LastComment = lastComment;
             _telegramBotService.SendTextMessages(chatSubscribed.ChatId, messages);
+        }
+    }
+
+    public class ChatSubscribedList : List<ChatSubscribed>
+    {
+        public void Add(ChatSubscribed chatSubscribed, int lastComment)
+        {
+            chatSubscribed.LastComment = lastComment;
+            Add(chatSubscribed);
         }
     }
 

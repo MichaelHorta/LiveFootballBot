@@ -39,15 +39,22 @@ namespace LiveFootballBot.Core
 
         public async Task<EventInfo> GetEventInfo(string apiUrl)
         {
-            RootEvent rootEvent = null;
-            HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var content = await response.Content.ReadAsStringAsync();
-                rootEvent = JsonConvert.DeserializeObject<RootEvent>(content);
-            }
+                RootEvent rootEvent = null;
+                HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    rootEvent = JsonConvert.DeserializeObject<RootEvent>(content);
+                }
 
-            return rootEvent.Data;
+                return rootEvent.Data;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

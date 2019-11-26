@@ -78,7 +78,8 @@ namespace LiveFootballBot.Core
                         ChatId = chatId
                     }
                 };
-            var matchBoard = new MatchBoard(_appSettings, _telegramBotService, _eventsService, match.Id, chatsSubscribed, match.EditorialInfo, match.SportEvent.Competitors);
+            var matchBoard = new MatchBoard(_appSettings, _telegramBotService, _eventsService, match.Id, match.EditorialInfo, match.SportEvent.Competitors);
+            matchBoard.SuscribeChat(chatId);
             _matchesBoard.Add(matchBoard);
 
             return matchBoard;
