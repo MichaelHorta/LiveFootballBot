@@ -80,6 +80,7 @@ namespace LiveFootballBot.Core
 
             var commentaries = eventInfo.Narration.Commentaries;
             commentaries = Clean(commentaries);
+            commentaries.Reverse();
 
             foreach (var chatSubscribed in chatsSubscribedList)
             {
