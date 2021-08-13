@@ -66,7 +66,7 @@ namespace LiveFootballBot.Core
         public MatchBoard CreateMatchBoard(string matchName, string date, long chatId)
         {
             var events = SearchEventsData(date);
-            var match = events.Find(ev => matchName.Equals($"{ev.SportEvent.Competitors.HomeTeam.AbbName}-{ev.SportEvent.Competitors.AwayTeam.AbbName}"));
+            var match = events.Find(ev => !string.IsNullOrEmpty(ev?.SportEvent?.Competitors?.HomeTeam?.AbbName) && !string.IsNullOrEmpty(ev?.SportEvent?.Competitors?.AwayTeam?.AbbName) && matchName.Equals($"{ev.SportEvent.Competitors.HomeTeam.AbbName}-{ev.SportEvent.Competitors.AwayTeam.AbbName}"));
 
             if (null == match)
                 return null;
@@ -78,7 +78,7 @@ namespace LiveFootballBot.Core
                         ChatId = chatId
                     }
                 };
-            var matchBoard = new MatchBoard(_appSettings, _telegramBotService, _eventsService, match.Id, match.EditorialInfo, match.SportEvent.Competitors);
+            var matchBoard = new MatchBoard(_appSettings, _telegramBotService, _eventsService, match.Id, match.SportEvent.Competitors);
             matchBoard.SuscribeChat(chatId);
             _matchesBoard.Add(matchBoard);
 
