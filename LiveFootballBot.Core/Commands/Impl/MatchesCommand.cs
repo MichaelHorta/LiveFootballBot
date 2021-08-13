@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace LiveFootballBot.Core.Commands
 {
@@ -16,17 +17,25 @@ namespace LiveFootballBot.Core.Commands
         {
             var eventsData = _board.SearchEventsData(parameters.Options[CommandParameters.KEY_DATE]);
 
+            var groupedEvents = from ev in eventsData group ev by ev.Tournament.Name into g select g;
+
             var response = "";
-            foreach (var ev in eventsData)
+            foreach (var group in groupedEvents)
             {
-                if (null == ev.SportEvent)
-                    continue;
+                var events = group.ToList();
+                response += $"<b>--- {group.Key} ---</b>\n";
+                foreach (var ev in events)
+                {
+                    if (null == ev.SportEvent)
+                        continue;
 
-                var cometitors = ev.SportEvent.Competitors;
-                var homeTeamName = !string.IsNullOrEmpty(cometitors.HomeTeam.AbbName) ? cometitors.HomeTeam.AbbName : cometitors.HomeTeam.FullName;
-                var awayTeamName = !string.IsNullOrEmpty(cometitors.AwayTeam.AbbName) ? cometitors.AwayTeam.AbbName : cometitors.AwayTeam.FullName;
+                    var cometitors = ev.SportEvent.Competitors;
+                    var homeTeamName = !string.IsNullOrEmpty(cometitors.HomeTeam.AbbName) ? cometitors.HomeTeam.AbbName : cometitors.HomeTeam.FullName;
+                    var awayTeamName = !string.IsNullOrEmpty(cometitors.AwayTeam.AbbName) ? cometitors.AwayTeam.AbbName : cometitors.AwayTeam.FullName;
 
-                response += $"<b>{homeTeamName} {ev.Score.HomeTeam.TotalScore} - {ev.Score.AwayTeam.TotalScore} {awayTeamName}</b> ({ev.Tournament.Name})\n";
+                    response += $"<b>{homeTeamName} {ev.Score.HomeTeam.TotalScore} - {ev.Score.AwayTeam.TotalScore} {awayTeamName}</b> ({ev.Tournament.Name}) \u23F5 {ev.StartDate.ToString("hh:mm:ss")} \n";
+                }
+                response += $"\n";
             }
             return response;
         }
