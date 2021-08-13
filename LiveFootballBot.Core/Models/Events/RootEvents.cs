@@ -18,7 +18,6 @@ namespace LiveFootballBot.Models
         [JsonIgnore]
         public DateTime LastUpdate { get; set; }
 
-        [JsonIgnore]
         public DateTime StartDate { get; set; }
 
         public Score Score { get; set; }
