@@ -1,4 +1,5 @@
-﻿using LiveFootballBot.Models;
+﻿using LiveFootballBot.Core.MessageTypes;
+using LiveFootballBot.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,8 +94,6 @@ namespace LiveFootballBot.Core
 
             InicialLineup();
 
-            //lastComment = eventInfo.Narration.Commentaries.Count;
-
             var commentaries = eventInfo.Narration.Commentaries;
             commentaries = Clean(commentaries);
 
@@ -128,64 +127,80 @@ namespace LiveFootballBot.Core
 
         private List<Commentary> Clean(List<Commentary> commentaries)
         {
-            var xx = commentaries.Where(o => o.CContent.Where(oo => oo != null && oo.Type.Contains("paragraph")).Count() > 1).ToList();
-            if (xx.Count() > 1)
-            {
-                Console.WriteLine("asd");
-            }
             var commentariesProccesed = new List<Commentary>();
             foreach (var commentary in commentaries)
             {
-                //if (null != commentary.CContent)
-                //    continue;
-
-                if (commentary.CContent.Count() > 1)
+                var allContentIsParagraph = commentary.CContent.Where(o => o.Type.Equals("paragraph")).Count() == commentary.CContent.Count;
+                if (allContentIsParagraph)
                 {
-                    Console.WriteLine("asd");
-                }
-
-                if (xx.Where(o => o.Id.Equals(commentary.Id)).Count() > 0)
-                {
-                    Console.WriteLine("asd");
-                }
-
-                //Imagen [0] con caption [1] y creditos [2]
-                if (commentary.CContent.Count == 3 && commentary.CContent[0].Type.Equals("image-reference") && commentary.CContent[1].Type.Equals("paragraph") && commentary.CContent[2].Type.Equals("paragraph"))
-                {
-                    continue;
-                }
-
-                //Texto [0] con imagen[1]
-                if (commentary.CContent.Count == 3 && commentary.CContent[0].Type.Equals("paragraph") && commentary.CContent[1].Type.Equals("image-reference") && commentary.CContent[2].Type.Equals("paragraph"))
-                {
-                    continue;
-                }
-
-                for (var i = 0; i < commentary.CContent.Count; i++)
-                {
-                    var ccontent = commentary.CContent[i];
-
-                    if (!ccontent.Type.Equals("paragraph"))
-                        continue;
-
-                    var content = ccontent.Content;
-                    content = content.Replace("<strong>", string.Empty);
-                    content = content.Replace("</strong>", string.Empty);
-
-                    foreach (var regex in blackListRegex)
+                    for (var i = 0; i < commentary.CContent.Count; i++)
                     {
-                        content = regex.Replace(content, string.Empty);
+                        var ccontent = commentary.CContent[i];
+
+                        if (ccontent.Type.Equals("paragraph"))
+                        {
+                            var content = CleanContent(ccontent.Content);
+                            commentary.CContent[i].Content = content;
+                            commentariesProccesed.Add(commentary);
+                        }
                     }
-                    commentary.CContent[i].Content = content;
-                    commentariesProccesed.Add(commentary);
+                }
+
+                var containsImageReference = commentary.CContent.Where(o => o.Type.Equals("image-reference")).Count() > 0;
+                if (containsImageReference)
+                {
+                    bool paragraphCatched = false;
+                    for (var i = 0; i < commentary.CContent.Count; i++)
+                    {
+                        var ccontent = commentary.CContent[i];
+                        if (ccontent.Type.Equals("paragraph") && !paragraphCatched)
+                        {
+                            var content = CleanContent(ccontent.Content);
+                            paragraphCatched = true;
+                            commentariesProccesed.Add(new Commentary
+                            {
+                                CContent = new List<CContent>() { new CContent
+                                {
+                                    Content = content,
+                                    Type = ccontent.Type
+                                } }
+                            });
+                        }
+                        if (ccontent.Type.Equals("image-reference") && !string.IsNullOrEmpty(ccontent.Url))
+                        {
+                            commentariesProccesed.Add(new Commentary
+                            {
+                                CContent = new List<CContent>() { new CContent
+                                {
+                                    Url = ccontent.Url,
+                                    Type = ccontent.Type
+                                } }
+                            });
+                        }
+                    }
                 }
             }
             return commentariesProccesed;
         }
 
+        private string CleanContent(string content)
+        {
+            content = content.Replace("<strong>", string.Empty);
+            content = content.Replace("</strong>", string.Empty);
+            content = content.Replace("<br>", string.Empty);
+            content = content.Replace("<br/>", string.Empty);
+
+            foreach (var regex in blackListRegex)
+            {
+                content = regex.Replace(content, string.Empty);
+            }
+
+            return content;
+        }
+
         private void SendCommentariesToChatSuscribed(EventInfo eventInfo, ChatSubscribed chatSubscribed, List<Commentary> commentaries)
         {
-            var messages = new List<string>();
+            //var messages = new List<string>();
             if (chatSubscribed.LastComment == 0)
             {
                 chatSubscribed.LastComment = commentaries.Count > 0 ? commentaries.Count - 1 : 0;
@@ -201,16 +216,27 @@ namespace LiveFootballBot.Core
                 if (!string.IsNullOrEmpty(commentary.MomentAction))
                     message += $"<b>{commentary.MomentAction}</b>\n";
 
-                foreach(var ccontent in commentary.CContent)
+                foreach (var ccontent in commentary.CContent)
                 {
-                    message += $"{ccontent.Content.Trim()}\n";
+                    if (ccontent.Type.Equals("paragraph"))
+                    {
+                        _telegramBotService.SendMessage(chatSubscribed.ChatId, new TextMessage
+                        {
+                            Text = message + $"{ccontent.Content.Trim()}"
+                        });
+                    }
+                    else if (ccontent.Type.Equals("image-reference"))
+                    {
+                        _telegramBotService.SendMessage(chatSubscribed.ChatId, new MediaMessage
+                        {
+                            Text = "",
+                            Url = ccontent.Url
+                        });
+                    }
                 }
-                
-                messages.Add(message);
             }
 
             chatSubscribed.LastComment = lastComment;
-            _telegramBotService.SendTextMessages(chatSubscribed.ChatId, messages);
         }
 
         private string InicialLineup()

@@ -175,7 +175,7 @@ namespace LiveFootballBot.Models
     public class Commentary
     {
         public bool Outstanding { get; set; }
-        public string Type { get; set; }
+        //public string Type { get; set; }
         public DateTime TimePublished { get; set; }
         public string MomentAction { get; set; }
         [JsonProperty(PropertyName = "commentary")]
@@ -190,6 +190,7 @@ namespace LiveFootballBot.Models
     {
         public string Type { get; set; }
         public string Content { get; set; }
+        public string Url { get; set; }
     }
 
     public class NarrationHead
