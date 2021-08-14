@@ -4,6 +4,8 @@ using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using LiveFootballBot.Core.MessageTypes;
 
 namespace LiveFootballBot.Core
 {
@@ -49,13 +51,23 @@ namespace LiveFootballBot.Core
             if (string.IsNullOrEmpty(text))
                 return;
 
+            var channelId = -1001590467245;
+
             try
             {
+                //botClient.SendPhotoAsync(channelId, "https://e00-marca.uecdn.es/assets/multimedia/imagenes/2021/08/13/16288862750358.png", "caption", Telegram.Bot.Types.Enums.ParseMode.Html);
+
                 botClient.SendTextMessageAsync(
-                  chatId: chatId,
+                  chatId: channelId,
                   text: $"{text}",
                   parseMode: Telegram.Bot.Types.Enums.ParseMode.Html
                 ).GetAwaiter().GetResult();
+
+                //botClient.SendTextMessageAsync(
+                //  chatId: chatId,
+                //  text: $"{text}",
+                //  parseMode: Telegram.Bot.Types.Enums.ParseMode.Html
+                //).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
@@ -63,16 +75,53 @@ namespace LiveFootballBot.Core
             }
         }
 
-        public void SendTextMessageAsync(long chatId, string text)
+        public void SendTextMessage(long chatId, TextMessage textMessage)
+        {
+            if (null == textMessage || string.IsNullOrEmpty(textMessage.Text))
+                return;
+
+            var channelId = -1001590467245;
+
+            try
+            {
+                //botClient.SendPhotoAsync(channelId, "https://e00-marca.uecdn.es/assets/multimedia/imagenes/2021/08/13/16288862750358.png", "caption", Telegram.Bot.Types.Enums.ParseMode.Html);
+
+                botClient.SendTextMessageAsync(
+                  chatId: channelId,
+                  text: $"{textMessage.Text}",
+                  parseMode: Telegram.Bot.Types.Enums.ParseMode.Html
+                ).GetAwaiter().GetResult();
+
+                //botClient.SendTextMessageAsync(
+                //  chatId: chatId,
+                //  text: $"{text}",
+                //  parseMode: Telegram.Bot.Types.Enums.ParseMode.Html
+                //).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public async Task SendTextMessageAsync(long chatId, string text)
         {
             if (string.IsNullOrEmpty(text))
                 return;
 
-            botClient.SendTextMessageAsync(
-                  chatId: chatId,
+            var channelId = -1001590467245;
+
+            await botClient.SendTextMessageAsync(
+                  chatId: channelId,
                   text: $"{text}",
                   parseMode: Telegram.Bot.Types.Enums.ParseMode.Html
                 );
+
+            //botClient.SendTextMessageAsync(
+            //      chatId: chatId,
+            //      text: $"{text}",
+            //      parseMode: Telegram.Bot.Types.Enums.ParseMode.Html
+            //    );
         }
 
         public void SendTextMessages(long chatId, List<string> texts)
@@ -80,6 +129,35 @@ namespace LiveFootballBot.Core
             foreach(var text in texts)
             {
                 SendTextMessage(chatId, text);
+            }
+        }
+
+        public void SendMediaMessage(long chatId, MediaMessage mediaMessage)
+        {
+            if (null == mediaMessage)
+                return;
+
+            var channelId = -1001590467245;
+
+            try
+            {
+                botClient.SendPhotoAsync(channelId, mediaMessage.Url, "", Telegram.Bot.Types.Enums.ParseMode.Html).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public void SendMessage(long chatId, IMessage message)
+        {
+            if (message is MediaMessage)
+            {
+                SendMediaMessage(chatId, (MediaMessage)message);
+            }
+            else if (message is TextMessage)
+            {
+                SendTextMessage(chatId, (TextMessage)message);
             }
         }
     }
