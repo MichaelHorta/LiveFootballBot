@@ -1,6 +1,7 @@
 ﻿using LiveFootballBot.Core.Commands;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
 namespace LiveFootballBot.Core
@@ -29,6 +30,10 @@ namespace LiveFootballBot.Core
             Console.WriteLine($"Received message from {message.Chat.Id}. Message: {message.Text}");
 
             var response = _commandManager.ExceuteCommand(message.Text, message.Chat.Id);
+
+            //var channelId = -1001590467245;
+            // _telegramBotService.SendTextMessageAsync(channelId, $"{response}");
+            
 
             _telegramBotService.SendTextMessageAsync(message.Chat.Id, $"{response}");
         }
