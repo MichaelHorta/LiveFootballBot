@@ -121,7 +121,12 @@ namespace LiveFootballBot.Models
 
         public int CompareTo(InicialLineup other)
         {
-            return PlayerPosition.Id - other.PlayerPosition.Id;
+            if (null != PlayerPosition && null != other.PlayerPosition)
+            {
+                return PlayerPosition.Id - other.PlayerPosition.Id;
+            }
+
+            return Name.CompareTo(other.Name);
         }
     }
 
